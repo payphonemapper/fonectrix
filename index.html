@@ -4,7 +4,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonectrix — Canada & NZ's Best Payphone Directory</title>
+    <title>Fonectrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -1363,6 +1363,9 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
                 
                 statusEl.classList.add('hidden');
                 renderNearestList();
+                
+                // Automatically scroll down to the top of the list
+                document.getElementById('nearest-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, (error) => {
                 statusEl.textContent = langData.nearest_error;
                 statusEl.className = "text-red-500 font-light text-sm block mt-4";
@@ -1538,6 +1541,4 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
         window.onload = init;
     </script>
 </body>
-
 </html>
-
