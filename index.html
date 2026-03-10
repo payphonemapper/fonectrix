@@ -28,14 +28,8 @@
 
     <!-- Navigation -->
     <nav class="max-w-4xl mx-auto px-6 py-8 md:py-12 flex justify-between items-center border-b border-slate-100">
-        <div class="flex items-center gap-2 group cursor-pointer" onclick="resetState()">
-            <div class="bg-slate-900 p-1.5 rounded-lg group-hover:bg-blue-600 transition-colors shrink-0">
-                <i data-lucide="phone" class="text-white w-4 h-4 md:w-[18px] md:h-[18px]"></i>
-            </div>
-            <div class="flex flex-col leading-none">
-                <span class="text-base md:text-lg font-black tracking-tighter uppercase">Fonectrix</span>
-                <span class="text-[8px] md:text-[9px] font-medium text-slate-400 uppercase tracking-widest -mt-0.5">a PayFoneMap service</span>
-            </div>
+        <div class="flex items-center cursor-pointer group" onclick="resetState()">
+            <img src="https://raw.githubusercontent.com/payphonemapper/webimages/main/fonectrix%20part%20of%20pfm.png" alt="Fonectrix - a PayFoneMap service" class="h-8 md:h-10 w-auto transition-opacity group-hover:opacity-75" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x40?text=Fonectrix';">
         </div>
         <div class="flex gap-4 md:gap-6">
             <button onclick="setView('list')" id="btn-list" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-blue-600 transition-colors cursor-pointer" data-t="nav_index">Index</button>
