@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonectrix — The Public Cord Registry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+        
+        :root {
+            --brand-blue: #354eef;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            background-color: var(--brand-blue);
+            color: white;
+        }
+
+        .drawer-transition { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hidden-drawer { transform: translateX(100%); }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .list-item-hover:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        ::selection {
+            background-color: white;
+            color: var(--brand-blue);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="max-w-4xl mx-auto px-6 py-8 md:py-12 flex justify-between items-center border-b border-white/10">
+        <div class="flex items-center cursor-pointer group" onclick="resetState()">
+            <img src="https://raw.githubusercontent.com/payphonemapper/webimages/refs/heads/main/fonectrix%20archive%20part%20of%20pfm.png" 
+                 alt="Fonectrix Archive" 
+                 class="h-8 md:h-10 w-auto transition-opacity group-hover:opacity-75 brightness-0 invert" 
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/200x40?text=Fonectrix+Archive';">
+        </div>
+        <div class="flex items-center gap-4 md:gap-6">
+            <button onclick="setView('list')" id="btn-list" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white transition-colors cursor-pointer" data-t="nav_index">Index</button>
+            <a href="https://fonectrix.info" target="_blank" rel="noopener" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white flex items-center gap-1.5 transition-colors group/link" data-t="hero_active_btn">
+                <span>Find Active Booths</span>
+                <i data-lucide="arrow-up-right" class="w-3 h-3 opacity-50 group-hover/link:opacity-100 transition-opacity"></i>
+            </a>
+            <button onclick="setView('settings')" id="btn-settings" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors cursor-pointer" data-t="nav_settings">Settings</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        
+        <!-- List View -->
+        <div id="view-list" class="space-y-12">
+            <!-- Hero Cover Section -->
+            <div class="py-12 md:py-20 border-b border-white/5">
+                <div class="max-w-2xl">
+                    <h1 class="text-5xl md:text-7xl font-black tracking-tighter leading-tight uppercase mb-6 text-white" data-t="hero_title">
+                        Keeping Booths Easy to Remember
+                    </h1>
+                    <p class="text-lg md:text-xl text-white/70 font-light leading-relaxed mb-8" data-t="hero_subtitle">
+                        Reminisce and remember the public communication access points that were formerly documented.
+                    </p>
+                </div>
+            </div>
+
+            <!-- List Anchor -->
+            <div id="archive-section" class="space-y-6 scroll-mt-12">
+                <div class="relative group">
+                    <i data-lucide="search" class="absolute left-0 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-white transition-colors pointer-events-none" size="24"></i>
+                    <input 
+                        id="search-input"
+                        type="text" 
+                        placeholder="Search locations or enter the Booth ID..."
+                        oninput="handleSearch(this.value)"
+                        class="w-full bg-transparent border-b-2 border-white/10 py-6 pl-10 text-2xl md:text-3xl font-light focus:outline-none focus:border-white transition-colors placeholder:text-white/20 text-white"
+                        data-t-placeholder="search_placeholder"
+                    >
+                </div>
+                
+                <div id="country-filters" class="flex flex-wrap gap-2 pt-2"></div>
+            </div>
+
+            <div id="directory-list" class="divide-y divide-white/5"></div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="view-settings" class="hidden space-y-24">
+            <div class="space-y-8">
+                <h2 class="text-3xl font-black tracking-tighter uppercase text-white" data-t="settings_title">Application Settings</h2>
+                
+                <div class="space-y-4">
+                    <label class="text-[10px] font-black uppercase text-white/40 tracking-widest block" data-t="settings_lang_label">Regional Language</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="changeLanguage('en')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-en">English</button>
+                        <button onclick="changeLanguage('fr-CA')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-fr-CA">Français (CA)</button>
+                        <button onclick="changeLanguage('pt')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-pt">Português</button>
+                        <button onclick="changeLanguage('zh')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-zh">繁體中文</button>
+                        <button onclick="changeLanguage('ko')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-ko">한국어</button>
+                        <button onclick="changeLanguage('ru')" class="px-4 py-2 border border-white/10 rounded-xl text-xs font-bold transition-all hover:border-white lang-btn" id="lang-ru">Русский</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="space-y-12">
+                <div class="space-y-2">
+                    <h2 class="text-3xl font-black tracking-tighter uppercase text-white" data-t="help_title">Help & Resources</h2>
+                    <p class="text-white/40 text-sm font-light" data-t="help_subtitle">Frequently asked questions and support for the registry.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- FAQ Tile 1 -->
+                    <button onclick="openHelpModal('faq_q1', 'faq_a1')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="help-circle" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q1">What is Fonectrix Archive?</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+
+                    <!-- FAQ Tile 2 -->
+                    <button onclick="openHelpModal('faq_q6', 'faq_a6')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="info" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q6">What does "removed from active listing" mean?</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+
+                    <!-- FAQ Tile 3 -->
+                    <button onclick="openHelpModal('faq_q2', 'faq_a2')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="calendar-days" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q2">When was the booth removed?</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+
+                    <!-- FAQ Tile 4 -->
+                    <button onclick="openHelpModal('faq_q3', 'faq_a3')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="plus-circle" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q3">Report a removed booth</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+
+                    <!-- FAQ Tile 5 -->
+                    <button onclick="openHelpModal('faq_q4', 'faq_a4')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="refresh-cw" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q4">How often is the archive updated?</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+
+                    <!-- FAQ Tile 6 -->
+                    <button onclick="openHelpModal('faq_q5', 'faq_a5')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
+                                <i data-lucide="undo-2" size="20"></i>
+                            </div>
+                            <i data-lucide="arrow-up-right" class="w-5 h-5 text-white/20 group-hover:text-white transition-all"></i>
+                        </div>
+                        <h4 class="font-bold text-lg leading-tight text-white mb-2" data-t="faq_q5">Can archived locations return to the main site?</h4>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-6">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md opacity-0 transition-opacity duration-300" id="help-modal-bg" onclick="closeHelpModal()"></div>
+        <div id="help-modal-content" class="relative bg-white w-full max-w-lg rounded-[2.5rem] p-10 md:p-12 shadow-2xl scale-90 opacity-0 transition-all duration-300 text-slate-900">
+            <button onclick="closeHelpModal()" class="absolute top-8 right-8 text-slate-300 hover:text-slate-900 transition-colors">
+                <i data-lucide="x" size="24"></i>
+            </button>
+            <div class="space-y-6">
+                <div id="help-modal-icon" class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-[#354eef]">
+                    <i data-lucide="help-circle" size="32"></i>
+                </div>
+                <h3 id="help-modal-title" class="text-3xl font-black tracking-tighter text-slate-900 leading-tight"></h3>
+                <div id="help-modal-body" class="text-slate-500 text-lg leading-relaxed font-light"></div>
+                <div class="pt-4" id="help-modal-action-container">
+                    <button onclick="closeHelpModal()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-colors uppercase tracking-widest text-xs">Got it</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail View Drawer -->
+    <div id="drawer-overlay" class="fixed inset-0 z-50 hidden flex items-center justify-end p-0 md:p-6">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 transition-opacity duration-300 cursor-pointer" id="drawer-bg" onclick="closeDrawer()"></div>
+        <div id="drawer-content" class="relative bg-white h-full w-full max-w-md shadow-2xl border-l border-white/10 p-8 flex flex-col drawer-transition hidden-drawer overflow-y-auto no-scrollbar text-slate-900">
+            <div class="flex justify-end items-start">
+                <button onclick="closeDrawer()" class="text-slate-300 hover:text-slate-900 transition-colors p-2">
+                    <i data-lucide="x" size="24"></i>
+                </button>
+            </div>
+            <div class="mt-8 flex-1 space-y-10" id="drawer-body"></div>
+            <footer class="text-[10px] font-bold uppercase text-slate-300 tracking-widest text-center mt-12 pb-4" data-t="drawer_footer"></footer>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-4xl mx-auto px-6 py-20 mt-12 border-t border-white/10">
+        <div class="flex flex-col md:flex-row justify-between items-center w-full gap-6 text-center md:text-left">
+            <p class="text-white/30 text-[10px] font-bold uppercase tracking-widest">
+                © 2026 Fonectrix Data Inc.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const CSV_DATA = `Country,Province/State,Coordinates,Description,Booth ID,Removal Date
+Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton, NB E1C 4Y2",CA-NB-MON-77722,20/04/2020`;
+
+        const I18N = {
+            en: {
+                nav_index: "Index", nav_settings: "Settings",
+                hero_title: "Keeping Booths Easy to Remember",
+                hero_subtitle: "Reminisce and remember the public communication access points that were formerly documented.",
+                hero_active_btn: "Find Active Booths",
+                search_placeholder: "Search locations or enter the Booth ID...",
+                settings_title: "Application Settings",
+                settings_lang_label: "Regional Language",
+                help_title: "Help & Resources",
+                help_subtitle: "Frequently asked questions and support for the registry.",
+                help_click_more: "Click to read more",
+                faq_q1: "What is Fonectrix Archive?",
+                faq_a1: "The Fonectrix Archive serves as a historical repository for telecommunications infrastructure that has been documented via our mapping projects and subsequently decommissioned.",
+                faq_q2: "When was the booth removed?",
+                faq_a2: "The specific decommissioning date is recorded for each entry in DD-MM-YYYY format. To view this information, select a specific booth from the index; the verified removal date will be displayed within the detailed record view.\n\nDD-MM-YYYY (e.g., 20/04/2020)",
+                faq_q3: "Report a removed booth",
+                faq_a3: "Help us keep our mapping system accurate. If you notice a booth listed in our archives that has been removed but appears active elsewhere, please use the Report a Booth tool on PayFoneMap.",
+                faq_q4: "How often is the archive updated?",
+                faq_a4: "The archive is updated on an ongoing basis, primarily when locations are removed from the main Fonectrix website. When infrastructure is decommissioned, altered, or no longer meets the criteria for active listing, those locations are preserved in the archive to maintain a historical record. The archive does not track or update active locations; all entries are maintained solely for documentation and preservation purposes.",
+                faq_q5: "Can archived locations return to the main site?",
+                faq_a5: "In rare cases, a location may be re-evaluated if independently verified as meeting current listing standards. Until then, it remains archived as part of the historical record.",
+                faq_q6: "What does \"removed from active listing\" mean?",
+                faq_a6: "It means the location no longer meets the criteria required to appear on the main Fonectrix website. This can include loss of verification, changes to accessibility, infrastructure alteration, or decommissioning.",
+                faq_btn3: "Report to PayFoneMap",
+                drawer_observation: "Observation", drawer_geodata: "Geodata", drawer_removal: "Removal Date",
+                drawer_maps_btn: "Open in Maps", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "No matching record found.", clear_search: "Clear Search"
+            },
+            pt: {
+                nav_index: "Índice", nav_settings: "Configurações",
+                hero_title: "Tornando as Cabines Fáceis de Lembrar",
+                hero_subtitle: "Relembre e recorde os pontos de acesso à comunicação pública que foram documentados anteriormente.",
+                hero_active_btn: "Encontrar Cabines Ativas",
+                search_placeholder: "Pesquisar locais ou IDs...",
+                settings_title: "Configurações do App",
+                settings_lang_label: "Idioma Regional",
+                help_title: "Ajuda e Recursos",
+                help_subtitle: "Perguntas frequentes e suporte para o registro.",
+                help_click_more: "Clique para ler mais",
+                faq_q1: "O que é o Arquivo Fonectrix?",
+                faq_a1: "O Arquivo Fonectrix funciona como um repositório histórico para infraestruturas de telecomunicações que foram documentadas através dos nossos projetos de mapeamento e, posteriormente, desativadas.",
+                faq_q2: "Quando a cabine foi removida?",
+                faq_a2: "A data específica de desativação é registada para cada entrada no formato DD-MM-AAAA. Para visualizar esta informação, selecione uma cabine específica no índice; a data de remoção verificada será apresentada na visualização detalhada do registo.\n\nDD-MM-YYYY (ex: 20/04/2020)",
+                faq_q3: "Relatar uma cabine removida",
+                faq_a3: "Ajude-nos a manter nosso sistema de mapeamento preciso. Se você notar uma cabine listada em nossos arquivos que foi removida, mas parece ativa em outro lugar, use a ferramenta Reportar uma Cabine no PayFoneMap.",
+                faq_q4: "Com que frequência o arquivo é atualizado?",
+                faq_a4: "O arquivo é atualizado de forma contínua, principalmente quando os locais são removidos do site principal da Fonectrix. Quando a infraestrutura é desativada, alterada ou não atende mais aos critérios para listagem ativa, esses locais são preservados no arquivo para manter um registro histórico. O arquivo não rastreia nem atualiza locais ativos; todas as entradas são mantidas exclusivamente para fins de documentação e preservação.",
+                faq_q5: "Os locais arquivados podem retornar ao site principal?",
+                faq_a5: "Em casos raros, um local pode ser reavaliado se for verificado de forma independente como cumprindo os padrões de listagem atuais. Até lá, permanece arquivado como parte do registo histórico.",
+                faq_q6: "O que significa \"removido da listagem ativa\"?",
+                faq_a6: "Significa que o local não atende mais aos critérios exigidos para aparecer no site principal da Fonectrix. Isso pode incluir perda de verificação, alterações na acessibilidade, alteração na infraestrutura ou desativação.",
+                faq_btn3: "Relatar ao PayFoneMap",
+                drawer_observation: "Observação", drawer_geodata: "Geodados", drawer_removal: "Data de Remoção",
+                drawer_maps_btn: "Abrir no Mapa", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "Nenhum registro encontrado.", clear_search: "Limpar Pesquisa"
+            },
+            zh: {
+                nav_index: "索引", nav_settings: "設置",
+                hero_title: "讓電話亭變得容易記住",
+                hero_subtitle: "緬懷並記住以前記錄過的公共通信接入點。",
+                hero_active_btn: "尋找現有的電話亭",
+                search_placeholder: "搜索地點或編號...",
+                settings_title: "應用程序設置",
+                settings_lang_label: "地區語言",
+                help_title: "幫助與資源",
+                help_subtitle: "常見問題及註冊表支持。",
+                help_click_more: "點擊閱讀更多",
+                faq_q1: "什麼是 Fonectrix 檔案庫？",
+                faq_a1: "Fonectrix 檔案庫是一個歷史資料庫，專門收錄曾透過我們的地圖項目記錄並隨後拆除的電信基礎設施。",
+                faq_q2: "電話亭何時被拆除？",
+                faq_a2: "每個條目都以 DD-MM-YYYY 格式記錄了具體的拆除日期。要查看此信息，請從索引中選擇特定的電話亭；經過核實的拆除日期將顯示在詳細記錄視圖中。\n\nDD-MM-YYYY (例如：20/04/2020)",
+                faq_q3: "報告已拆除的電話亭",
+                faq_a3: "幫助我們保持地圖系統的準確性。如果您發現我們檔案中列出的電話亭已被拆除，但在其他地方顯示為活躍，請使用 PayFoneMap 上的“報告電話亭”工具。",
+                faq_q4: "檔案多久更新一次？",
+                faq_a4: "檔案會持續更新，主要是當地點從 Fonectrix 主網站移除時。當基礎設施退役、變更或不再符合活躍清單標準時，這些地點將被保存在檔案中以維持歷史記錄。檔案不跟踪或更新活躍地點；所有條目僅用於文檔和保存目的。",
+                faq_q5: "存檔的地點可以回到主站點嗎？",
+                faq_a5: "在極少數情況下，如果獨立驗證某個地點符合當前的列名標準，則可能會對其進行重新評估。在那之前，它仍作為歷史記錄的一部分被存檔。",
+                faq_q6: "“從活躍清單中移除”是什麼意思？",
+                faq_a6: "這意味著該地點不再符合出現在 Fonectrix 主網站上所需的標準。這可能包括失去驗證、無障礙設施的變化、基礎設施的改動或退役。",
+                faq_btn3: "向 PayFoneMap 報告",
+                drawer_observation: "備註", drawer_geodata: "地理數據", drawer_removal: "拆除日期",
+                drawer_maps_btn: "在地圖中開啟", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "未找到符合的記錄。", clear_search: "清除搜索"
+            },
+            ko: {
+                nav_index: "인덱스", nav_settings: "설정",
+                hero_title: "부스를 기억하기 쉽게 유지하기",
+                hero_subtitle: "이전에 문서화되었던 공공 통신 액세스 포인트를 회상하고 기억해 보세요.",
+                hero_active_btn: "활성 부스 찾기",
+                search_placeholder: "위치 또는 ID 검색...",
+                settings_title: "애플리케이션 설정",
+                settings_lang_label: "지역 언어",
+                help_title: "도움말 및 리소스",
+                help_subtitle: "레지스트리에 대한 자주 묻는 질문과 지원입니다.",
+                help_click_more: "자세히 보려면 클릭",
+                faq_q1: "Fonectrix 아카이브란 무엇인가요?",
+                faq_a1: "Fonectrix 아카이브는 당사의 매핑 프로젝트를 통해 문서화되었다가 이후 폐쇄된 통신 인프라를 위한 역사적 저장소 역할을 합니다.",
+                faq_q2: "부스는 언제 철거되었나요?",
+                faq_a2: "각 항목에는 DD-MM-YYYY 형식으로 구체적인 폐쇄 날짜가 기록되어 있습니다. 이 정보를 확인하려면 인덱스에서 특정 부스를 선택하십시오. 상세 기록 보기 내에 확인된 철거 날짜가 표시됩니다.\n\nDD-MM-YYYY (예: 20/04/2020)",
+                faq_q3: "철거된 부스 신고",
+                faq_a3: "매핑 시스템을 정확하게 유지할 수 있도록 도와주세요. 아카이브에 나열된 부스가 철거되었음에도 다른 곳에서 활성 상태로 표시되는 것을 발견하시면, PayFoneMap의 '부스 신고' 도구를 사용해 주십시오.",
+                faq_q4: "아카이브는 얼마나 자주 업데이트되나요?",
+                faq_a4: "아카이브는 주로 메인 Fonectrix 웹사이트에서 위치가 삭제될 때 지속적으로 업데이트됩니다. 인프라가 폐쇄, 변경되거나 더 이상 활성 목록 기준을 충족하지 않을 경우, 역사적 기록을 유지하기 위해 해당 위치는 아카이브에 보존됩니다. 아카이브는 활성 위치를 추적하거나 업데이트하지 않으며 모든 항목은 문서화 및 보존 목적으로만 유지됩니다.",
+                faq_q5: "보관된 위치가 기본 사이트로 돌아올 수 있나요?",
+                faq_a5: "드문 경우지만, 현재 등록 기준을 충족하는 것으로 독립적으로 확인되면 위치를 재평가할 수 있습니다. 그때까지는 역사적 기록의 일부로 보관됩니다.",
+                faq_q6: "\"활성 목록에서 제거됨\"은 무엇을 의미합니까?",
+                faq_a6: "해당 위치가 메인 Fonectrix 웹사이트에 표시되는 데 필요한 기준을 더 이상 충족하지 않음을 의미합니다. 여기에는 인증 손실, 접근성 변경, 인프라 변경 또는 폐쇄가 포함될 수 있습니다.",
+                faq_btn3: "PayFoneMap에 신고하기",
+                drawer_observation: "관찰 내용", drawer_geodata: "지리 데이터", drawer_removal: "철거 날짜",
+                drawer_maps_btn: "지도에서 열기", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "검색 결과가 없습니다.", clear_search: "검색 초기화"
+            },
+            "fr-CA": {
+                nav_index: "Index", nav_settings: "Paramètres",
+                hero_title: "Garder les cabines faciles à mémoriser",
+                hero_subtitle: "Remémorez-vous et souvenez-vous des points d'accès aux communications publiques qui ont été documentés auparavant.",
+                hero_active_btn: "Trouver des cabines actives",
+                search_placeholder: "Rechercher des lieux ou des IDs...",
+                settings_title: "Paramètres de l'application",
+                settings_lang_label: "Langue régionale",
+                help_title: "Aide et ressources",
+                help_subtitle: "Questions fréquentes et support pour le registre.",
+                help_click_more: "Cliquez pour en savoir plus",
+                faq_q1: "Qu'est-ce que l'Archive Fonectrix ?",
+                faq_a1: "L'Archive Fonectrix sert de répertoire historique pour les infrastructures de télécommunications qui ont été documentées via nos projets de cartographie et déclassées par la suite.",
+                faq_q2: "Quand la cabine a-t-elle été retirée ?",
+                faq_a2: "La date spécifique de mise hors service est enregistrée pour chaque entrée au format JJ-MM-AAAA. Pour consulter cette information, sélectionnez une cabine spécifique dans l'index ; la date de retrait vérifiée sera affichée dans la vue détaillée de l'enregistrement.\n\nDD-MM-YYYY (ex: 20/04/2020)",
+                faq_q3: "Signaler une cabine retirée",
+                faq_a3: "Aidez-nous à maintenir l'exactitude de notre système de cartographie. Si vous remarquez une cabine répertoriée dans nos archives qui a été retirée mais apparaît comme active ailleurs, veuillez utiliser l'outil Signaler une cabine sur PayFoneMap.",
+                faq_q4: "À quelle fréquence l'archive est-elle mise à jour ?",
+                faq_a4: "L'archive est mise à jour de façon continue, principalement lorsque des emplacements sont retirés du site Web principal de Fonectrix. Lorsque l'infrastructure est déclassée, modifiée ou ne répond plus aux critères d'inscription active, ces emplacements sont conservés dans l'archive pour maintenir un dossier historique. L'archive ne suit pas et ne met pas à jour les emplacements actifs ; toutes les entrées sont conservées uniquement à des fins de documentation et de préservation.",
+                faq_q5: "Les lieux archivés peuvent-ils revenir sur le site principal ?",
+                faq_a5: "Dans de rares cas, un emplacement peut être réévalué s'il est vérifié de manière indépendante comme répondant aux normes d'inscription actuelles. Jusque-là, il reste archivé comme faisant partie du dossier historique.",
+                faq_q6: "Que signifie « retiré de la liste active » ?",
+                faq_a6: "Cela signifie que l'emplacement ne répond plus aux critères requis pour apparaître sur le site Web principal de Fonectrix. Cela peut inclure la perte de vérification, des changements dans l'accessibilité, une modification de l'infrastructure ou une mise hors service.",
+                faq_btn3: "Signaler à PayFoneMap",
+                drawer_observation: "Observation", drawer_geodata: "Géodonnées", drawer_removal: "Date de retrait",
+                drawer_maps_btn: "Ouvrir dans Maps", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "Aucun enregistrement trouvé.", clear_search: "Effacer la recherche"
+            },
+            ru: {
+                nav_index: "Индекс", nav_settings: "Настройки",
+                hero_title: "Чтобы будки было легко запомнить",
+                hero_subtitle: "Вспомните и сохраните в памяти пункты общественного доступа к связи, которые были задокументированы ранее.",
+                hero_active_btn: "Найти активные кабины",
+                search_placeholder: "Поиск мест или ID...",
+                settings_title: "Настройки приложения",
+                settings_lang_label: "Региональный язык",
+                help_title: "Помощь и ресурсы",
+                help_subtitle: "Часто задаваемые вопросы и поддержка реестра.",
+                help_click_more: "Нажмите, чтобы прочитать",
+                faq_q1: "Что такое Архив Fonectrix?",
+                faq_a1: "Архив Fonectrix служит историческим депозитарием объектов телекоммуникационной инфраструктуры, которые были задокументированы в рамках наших картографических проектов и впоследствии выведены из эксплуатации.",
+                faq_q2: "Когда была демонтирована будка?",
+                faq_a2: "Для каждой записи фиксируется конкретная дата вывода из эксплуатации в формате ДД-ММ-ГГГГ. Чтобы просмотреть эту информацию, выберите определенную будку из индекса; подтвержденная дата демонтажа будет отображена в режиме детального просмотра записи.\n\nDD-MM-YYYY (например, 20/04/2020)",
+                faq_q3: "Сообщить о демонтированной будке",
+                faq_a3: "Помогите нам поддерживать точность нашей системы картографии. Если вы заметили будку в нашем архиве, которая была демонтирована, но числится активной в других местах, воспользуйтесь инструментом «Сообщить о будке» на PayFoneMap.",
+                faq_q4: "Как часто обновляется архив?",
+                faq_a4: "Архив обновляется на постоянной основе, прежде всего при удалении локаций с основного сайта Fonectrix. Когда инфраструктура выводится из эксплуатации, изменяется или перестает соответствовать критериям активного листинга, эти локации сохраняются в архиве для ведения исторической справки. Архив не отслеживает и не обновляет активные локации; все записи поддерживаются исключительно в целях документирования и сохранения.",
+                faq_q5: "Могут ли архивные локации вернуться на основной сайт?",
+                faq_a5: "В редких случаях локация может быть пересмотрена, если она независимо подтверждена как соответствующая текущим стандартам листинга. До тех пор она остается заархивированной как часть исторической записи.",
+                faq_q6: "Что означает «удалено из активного списка»?",
+                faq_a6: "Это означает, что местоположение больше не соответствует критериям, необходимым для появления на основном сайте Fonectrix. Это может включать потерю верификации, изменение доступности, изменение инфраструктуры или вывод из эксплуатации.",
+                faq_btn3: "Сообщить в PayFoneMap",
+                drawer_observation: "Описание", drawer_geodata: "Геоданные", drawer_removal: "Дата демонтажа",
+                drawer_maps_btn: "Открыть в картах", drawer_footer: "Powered by PayFoneMap.com",
+                no_results: "Совпадающих записей не найдено.", clear_search: "Очистить поиск"
+            }
+        };
+
+        let currentSearch = '';
+        let currentCountry = '';
+        let currentView = 'list';
+        let currentLang = 'en';
+        let booths = [];
+
+        function parseCSV(text) {
+            const lines = text.trim().split("\n");
+            const headers = lines[0].split(",");
+            return lines.slice(1).map(line => {
+                const values = line.split(/,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)/);
+                const obj = {};
+                headers.forEach((h, i) => {
+                    const cleanH = h.trim();
+                    const cleanV = values[i]?.replace(/^\"|\"$/g, "").trim() || "";
+                    obj[cleanH] = cleanV;
+                });
+                return obj;
+            });
+        }
+
+        function init() {
+            booths = parseCSV(CSV_DATA);
+            applyLanguage();
+            renderFilters();
+            renderList();
+            lucide.createIcons();
+        }
+
+        function applyLanguage() {
+            const langData = I18N[currentLang] || I18N.en;
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                if (langData[key]) el.textContent = langData[key];
+            });
+            document.querySelectorAll('[data-t-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-t-placeholder');
+                if (langData[key]) el.placeholder = langData[key];
+            });
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                const isActive = btn.id === `lang-${currentLang}`;
+                btn.className = `px-4 py-2 border rounded-xl text-xs font-bold transition-all lang-btn ${isActive ? 'bg-white text-[#354eef] border-white' : 'border-white/10 text-white hover:border-white'}`;
+            });
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            applyLanguage();
+            renderFilters();
+            renderList();
+        }
+
+        function renderFilters() {
+            const container = document.getElementById('country-filters');
+            const countries = [...new Set(booths.map(b => b.Country))].filter(Boolean).sort();
+            
+            const getBtnClass = (isActive) => {
+                const base = "px-3 py-1.5 text-[10px] font-bold uppercase rounded-full border cursor-pointer transition-all";
+                if (isActive) return `${base} bg-white/20 border-white text-white`;
+                return `${base} border-white/10 text-white/50 hover:border-white/30`;
+            };
+
+            let html = `<button onclick="setCountry('')" class="${getBtnClass(!currentCountry)}">All Global</button>`;
+            
+            countries.forEach(c => {
+                const isActive = currentCountry === c;
+                html += `<button onclick="setCountry('${c}')" class="${getBtnClass(isActive)}">${c}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderList() {
+            const container = document.getElementById('directory-list');
+            const term = currentSearch.toLowerCase();
+            const filtered = booths.filter(p => {
+                const searchable = `${p['Booth ID']} ${p.Description} ${p['Province/State']} ${p.Country}`.toLowerCase();
+                const matchesSearch = searchable.includes(term);
+                const matchesCountry = !currentCountry || p.Country === currentCountry;
+                return matchesSearch && matchesCountry;
+            });
+
+            if (filtered.length === 0) {
+                const lang = I18N[currentLang] || I18N.en;
+                container.innerHTML = `<div class="py-24 text-center space-y-4"><span class="text-4xl">🔎</span><p class="text-white/40 font-light italic">${lang.no_results}</p><button onclick="resetState()" class="text-[10px] font-black uppercase tracking-widest text-white border-b border-white/20 hover:border-white cursor-pointer">${lang.clear_search}</button></div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => `
+                <div class="py-10 group cursor-pointer flex justify-between items-center transition-all hover:translate-x-1 list-item-hover px-4 -mx-4 rounded-xl" onclick="openDrawer('${p['Booth ID']}')">
+                    <div class="space-y-2 min-w-0 pr-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-[9px] font-black bg-white/10 border border-white/10 px-1.5 py-0.5 rounded text-white/60 group-hover:bg-white group-hover:text-[#354eef] transition-colors shrink-0 uppercase tracking-tighter">
+                                ${p['Booth ID']}
+                            </span>
+                            <h3 class="text-xl font-semibold text-white tracking-tight truncate">${p['Province/State']}, ${p.Country}</h3>
+                        </div>
+                        <p class="text-sm text-white/50 max-w-xl truncate font-light leading-relaxed">${p.Description}</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="text-white/20 group-hover:text-white transition-all shrink-0"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function handleSearch(val) { currentSearch = val; renderList(); }
+        function setCountry(c) { currentCountry = c; renderFilters(); renderList(); }
+
+        function setView(v) {
+            currentView = v;
+            document.getElementById('view-list').classList.toggle('hidden', v !== 'list');
+            document.getElementById('view-settings').classList.toggle('hidden', v !== 'settings');
+            ['list', 'settings'].forEach(id => {
+                const btn = document.getElementById(`btn-${id}`);
+                btn.className = `text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors cursor-pointer ${v === id ? 'text-white' : 'text-white/40 hover:text-white'}`;
+            });
+        }
+
+        function resetState() {
+            currentSearch = ''; currentCountry = '';
+            document.getElementById('search-input').value = '';
+            setView('list'); renderFilters(); renderList();
+        }
+
+        function openHelpModal(qKey, aKey) {
+            const lang = I18N[currentLang] || I18N.en;
+            const title = lang[qKey];
+            const body = lang[aKey];
+            
+            document.getElementById('help-modal-title').textContent = title;
+            document.getElementById('help-modal-body').innerHTML = body.replace(/\n/g, '<br>');
+            
+            const actionContainer = document.getElementById('help-modal-action-container');
+            if (qKey === 'faq_q3') {
+                actionContainer.innerHTML = `
+                    <div class="flex flex-col gap-3">
+                        <a href="https://payfonemap.com/report-a-booth" target="_blank" class="w-full py-4 bg-[#354eef] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all uppercase tracking-widest text-xs">
+                            <i data-lucide="external-link" size="16"></i> ${lang.faq_btn3}
+                        </a>
+                        <button onclick="closeHelpModal()" class="w-full py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold hover:bg-slate-200 transition-colors uppercase tracking-widest text-xs">Close</button>
+                    </div>
+                `;
+            } else {
+                actionContainer.innerHTML = `<button onclick="closeHelpModal()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-colors uppercase tracking-widest text-xs">Got it</button>`;
+            }
+            
+            const modal = document.getElementById('help-modal');
+            const bg = document.getElementById('help-modal-bg');
+            const content = document.getElementById('help-modal-content');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                bg.classList.replace('opacity-0', 'opacity-100');
+                content.classList.replace('scale-90', 'scale-100');
+                content.classList.replace('opacity-0', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeHelpModal() {
+            const bg = document.getElementById('help-modal-bg');
+            const content = document.getElementById('help-modal-content');
+            bg.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('scale-100', 'scale-90');
+            content.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => {
+                document.getElementById('help-modal').classList.add('hidden');
+                if (!document.getElementById('drawer-overlay').classList.contains('hidden')) return;
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function openDrawer(id) {
+            const booth = booths.find(b => b['Booth ID'] === id);
+            if (!booth) return;
+            const body = document.getElementById('drawer-body');
+            const lang = I18N[currentLang] || I18N.en;
+            body.innerHTML = `
+                <div class="space-y-4 text-slate-900">
+                    <span class="text-[10px] font-black uppercase text-[#354eef] tracking-widest">${booth['Booth ID']}</span>
+                    <h2 class="text-4xl md:text-5xl font-black tracking-tighter leading-none">${booth['Province/State']}</h2>
+                    <p class="text-xl text-slate-400 font-light tracking-tight">${booth.Country}</p>
+                </div>
+                <div class="space-y-10 pt-4">
+                    <div class="flex gap-5"><div class="shrink-0 mt-1 text-slate-300"><i data-lucide="info" size="20"></i></div><div><span class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">${lang.drawer_observation}</span><p class="text-slate-600 font-light leading-relaxed text-sm md:text-base">${booth.Description}</p></div></div>
+                    <div class="flex gap-5"><div class="shrink-0 mt-1 text-slate-300"><i data-lucide="map-pin" size="20"></i></div><div><span class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">${lang.drawer_geodata}</span><code class="text-xs bg-slate-50 px-2 py-1 rounded text-slate-500 font-mono tracking-tighter">${booth.Coordinates}</code></div></div>
+                    ${booth['Removal Date'] ? `<div class="flex gap-5"><div class="shrink-0 mt-1 text-slate-300"><i data-lucide="calendar-x" size="20"></i></div><div><span class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">${lang.drawer_removal}</span><p class="text-red-600 font-bold leading-relaxed text-sm md:text-base">${booth['Removal Date']}</p></div></div>` : ''}
+                </div>
+                <div class="pt-8"><a href="https://www.google.com/maps?q=${booth.Coordinates.replace(/ /g, '')}" target="_blank" class="w-full bg-[#354eef] text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-[#354eef]/20"><i data-lucide="external-link" size="18"></i> ${lang.drawer_maps_btn}</a></div>
+            `;
+            const overlay = document.getElementById('drawer-overlay');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('drawer-bg').classList.replace('opacity-0', 'opacity-100');
+                document.getElementById('drawer-content').classList.remove('hidden-drawer');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeDrawer() {
+            document.getElementById('drawer-bg').classList.replace('opacity-100', 'opacity-0');
+            document.getElementById('drawer-content').classList.add('hidden-drawer');
+            setTimeout(() => {
+                document.getElementById('drawer-overlay').classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 400);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
