@@ -4,7 +4,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonectrix Archive</title>
+    <title>Fonectrix — The Public Cord Registry</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -56,7 +56,7 @@
         </div>
         <div class="flex items-center gap-4 md:gap-6">
             <button onclick="setView('list')" id="btn-list" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white transition-colors cursor-pointer" data-t="nav_index">Index</button>
-            <a href="https://fonectrix.info" target="_blank" rel="noopener" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white flex items-center gap-1.5 transition-colors group/link" data-t="hero_active_btn">
+            <a href="https://fonectrix.info" class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/70 hover:text-white flex items-center gap-1.5 transition-colors group/link" data-t="hero_active_btn">
                 <span>Find Active Booths</span>
                 <i data-lucide="arrow-up-right" class="w-3 h-3 opacity-50 group-hover/link:opacity-100 transition-opacity"></i>
             </a>
@@ -248,7 +248,7 @@
 
     <script>
         const CSV_DATA = `Country,Province/State,Coordinates,Description,Booth ID,Removal Date
-Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton, NB E1C 4Y2",CA-NB-MON-77722,04/05/2026`;
+Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton, NB E1C 4Y2",CA-NB-MON-77722,20/04/2020`;
 
         const I18N = {
             en: {
