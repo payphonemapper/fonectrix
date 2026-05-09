@@ -4,7 +4,7 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fonectrix Archive</title>
+    <title>Fonectrix — The Public Cord Registry</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -41,6 +41,24 @@
         ::selection {
             background-color: white;
             color: var(--brand-blue);
+        }
+
+        .faq-disclaimer {
+            background-color: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-format-badge {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -127,7 +145,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- FAQ Tile 1 -->
                     <button onclick="openHelpModal('faq_q1', 'faq_a1')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
@@ -139,7 +156,6 @@
                         <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
                     </button>
 
-                    <!-- FAQ Tile 2 -->
                     <button onclick="openHelpModal('faq_q6', 'faq_a6')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
@@ -151,8 +167,7 @@
                         <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
                     </button>
 
-                    <!-- FAQ Tile 3 -->
-                    <button onclick="openHelpModal('faq_q2', 'faq_a2')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
+                    <button onclick="openHelpModal('faq_q2', 'faq_a2', 'disclaimer_removal', true)" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
                                 <i data-lucide="calendar-days" size="20"></i>
@@ -163,7 +178,6 @@
                         <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
                     </button>
 
-                    <!-- FAQ Tile 4 -->
                     <button onclick="openHelpModal('faq_q3', 'faq_a3')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
@@ -175,7 +189,6 @@
                         <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
                     </button>
 
-                    <!-- FAQ Tile 5 -->
                     <button onclick="openHelpModal('faq_q4', 'faq_a4')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
@@ -187,7 +200,6 @@
                         <span class="text-[10px] font-bold uppercase tracking-widest text-white/30 group-hover:text-white/60 transition-colors" data-t="help_click_more">Click to read more</span>
                     </button>
 
-                    <!-- FAQ Tile 6 -->
                     <button onclick="openHelpModal('faq_q5', 'faq_a5')" class="p-8 bg-white/5 rounded-3xl border border-white/10 text-left hover:bg-white/10 transition-all hover:scale-[1.01] group active:scale-[0.98]">
                         <div class="flex justify-between items-center mb-4">
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 group-hover:text-white transition-colors">
@@ -214,8 +226,16 @@
                 <div id="help-modal-icon" class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-[#354eef]">
                     <i data-lucide="help-circle" size="32"></i>
                 </div>
+                <div id="help-modal-disclaimer-box" class="hidden"></div>
                 <h3 id="help-modal-title" class="text-3xl font-black tracking-tighter text-slate-900 leading-tight"></h3>
                 <div id="help-modal-body" class="text-slate-500 text-lg leading-relaxed font-light"></div>
+                <div id="help-modal-format-example" class="hidden py-4 border-t border-slate-100 mt-2">
+                    <span class="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-3" data-t="date_format_label">Expected Format</span>
+                    <div class="flex items-center gap-3">
+                         <span class="date-format-badge">DD-MM-YYYY</span>
+                         <span class="text-slate-400 text-sm font-medium italic">(e.g., 20/04/2020)</span>
+                    </div>
+                </div>
                 <div class="pt-4" id="help-modal-action-container">
                     <button onclick="closeHelpModal()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-colors uppercase tracking-widest text-xs">Got it</button>
                 </div>
@@ -262,10 +282,12 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "Help & Resources",
                 help_subtitle: "Frequently asked questions and support for the registry.",
                 help_click_more: "Click to read more",
+                date_format_label: "Expected Format",
                 faq_q1: "What is Fonectrix Archive?",
                 faq_a1: "The Fonectrix Archive serves as a historical repository for telecommunications infrastructure that has been documented via our mapping projects and subsequently decommissioned.",
                 faq_q2: "When was the booth removed?",
-                faq_a2: "The specific decommissioning date is recorded for each entry in DD-MM-YYYY format. To view this information, select a specific booth from the index; the verified removal date will be displayed within the detailed record view.\n\nDD-MM-YYYY (e.g., 20/04/2020)",
+                faq_a2: "The specific decommissioning date is recorded for each entry. To view this information, select a specific booth from the index; the verified removal date will be displayed within the detailed record view.",
+                disclaimer_removal: "IMPORTANT: The 'Removal Date' indicates when the booth was officially removed from our active database records. This may differ from the actual date the hardware was physically removed from the location.",
                 faq_q3: "Report a removed booth",
                 faq_a3: "Help us keep our mapping system accurate. If you notice a booth listed in our archives that has been removed but appears active elsewhere, please use the Report a Booth tool on PayFoneMap.",
                 faq_q4: "How often is the archive updated?",
@@ -290,18 +312,20 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "Ajuda e Recursos",
                 help_subtitle: "Perguntas frequentes e suporte para o registro.",
                 help_click_more: "Clique para ler mais",
+                date_format_label: "Formato Esperado",
                 faq_q1: "O que é o Arquivo Fonectrix?",
                 faq_a1: "O Arquivo Fonectrix funciona como um repositório histórico para infraestruturas de telecomunicações que foram documentadas através dos nossos projetos de mapeamento e, posteriormente, desativadas.",
                 faq_q2: "Quando a cabine foi removida?",
-                faq_a2: "A data específica de desativação é registada para cada entrada no formato DD-MM-AAAA. Para visualizar esta informação, selecione uma cabine específica no índice; a data de remoção verificada será apresentada na visualização detalhada do registo.\n\nDD-MM-YYYY (ex: 20/04/2020)",
+                faq_a2: "A data específica de desativação é registada para cada entrada. Para visualizar esta informação, selecione uma cabine específica no índice; a data de remoção verificada será apresentada na visualização detalhada do registo.",
+                disclaimer_removal: "IMPORTANTE: A 'Data de Remoção' indica quando a cabine foi oficialmente removida dos nossos registros de banco de dados ativos. Isso pode diferir da data real em que o hardware foi removido fisicamente do local.",
                 faq_q3: "Relatar uma cabine removida",
                 faq_a3: "Ajude-nos a manter nosso sistema de mapeamento preciso. Se você notar uma cabine listada em nossos arquivos que foi removida, mas parece ativa em outro lugar, use a ferramenta Reportar uma Cabine no PayFoneMap.",
                 faq_q4: "Com que frequência o arquivo é atualizado?",
                 faq_a4: "O arquivo é atualizado de forma contínua, principalmente quando os locais são removidos do site principal da Fonectrix. Quando a infraestrutura é desativada, alterada ou não atende mais aos critérios para listagem ativa, esses locais são preservados no arquivo para manter um registro histórico. O arquivo não rastreia nem atualiza locais ativos; todas as entradas são mantidas exclusivamente para fins de documentação e preservação.",
                 faq_q5: "Os locais arquivados podem retornar ao site principal?",
                 faq_a5: "Em casos raros, um local pode ser reavaliado se for verificado de forma independente como cumprindo os padrões de listagem atuais. Até lá, permanece arquivado como parte do registo histórico.",
-                faq_q6: "O que significa \"removido da listagem ativa\"?",
-                faq_a6: "Significa que o local não atende mais aos critérios exigidos para aparecer no site principal da Fonectrix. Isso pode incluir perda de verificação, alterações na acessibilidade, alteração na infraestrutura ou desativação.",
+                faq_q6: "What does \"removed from active listing\" mean?",
+                faq_a6: "It means the location no longer meets the criteria required to appear on the main Fonectrix website. This can include loss of verification, changes to accessibility, infrastructure alteration, or decommissioning.",
                 faq_btn3: "Relatar ao PayFoneMap",
                 drawer_observation: "Observação", drawer_geodata: "Geodados", drawer_removal: "Data de Remoção",
                 drawer_maps_btn: "Abrir no Mapa", drawer_footer: "Powered by PayFoneMap.com",
@@ -318,10 +342,12 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "幫助與資源",
                 help_subtitle: "常見問題及註冊表支持。",
                 help_click_more: "點擊閱讀更多",
+                date_format_label: "日期格式",
                 faq_q1: "什麼是 Fonectrix 檔案庫？",
                 faq_a1: "Fonectrix 檔案庫是一個歷史資料庫，專門收錄曾透過我們的地圖項目記錄並隨後拆除的電信基礎設施。",
                 faq_q2: "電話亭何時被拆除？",
-                faq_a2: "每個條目都以 DD-MM-YYYY 格式記錄了具體的拆除日期。要查看此信息，請從索引中選擇特定的電話亭；經過核實的拆除日期將顯示在詳細記錄視圖中。\n\nDD-MM-YYYY (例如：20/04/2020)",
+                faq_a2: "每個條目都記錄了具體的拆除日期。要查看此信息，請從索引中選擇特定的電話亭；經過核實的拆除日期將顯示在詳細記錄視圖中。",
+                disclaimer_removal: "重要提示：“拆卸日期”是指該電話亭正式從我們的活躍數據庫記錄中刪除的時間。這可能與硬件從該位置物理拆卸的實際日期有所不同。",
                 faq_q3: "報告已拆除的電話亭",
                 faq_a3: "幫助我們保持地圖系統的準確性。如果您發現我們檔案中列出的電話亭已被拆除，但在其他地方顯示為活躍，請使用 PayFoneMap 上的“報告電話亭”工具。",
                 faq_q4: "檔案多久更新一次？",
@@ -346,16 +372,18 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "도움말 및 리소스",
                 help_subtitle: "레지스트리에 대한 자주 묻는 질문과 지원입니다.",
                 help_click_more: "자세히 보려면 클릭",
+                date_format_label: "날짜 형식",
                 faq_q1: "Fonectrix 아카이브란 무엇인가요?",
                 faq_a1: "Fonectrix 아카이브는 당사의 매핑 프로젝트를 통해 문서화되었다가 이후 폐쇄된 통신 인프라를 위한 역사적 저장소 역할을 합니다.",
                 faq_q2: "부스는 언제 철거되었나요?",
-                faq_a2: "각 항목에는 DD-MM-YYYY 형식으로 구체적인 폐쇄 날짜가 기록되어 있습니다. 이 정보를 확인하려면 인덱스에서 특정 부스를 선택하십시오. 상세 기록 보기 내에 확인된 철거 날짜가 표시됩니다.\n\nDD-MM-YYYY (예: 20/04/2020)",
+                faq_a2: "각 항목에는 구체적인 폐쇄 날짜가 기록되어 있습니다. 이 정보를 확인하려면 인덱스에서 특정 부스를 선택하십시오. 상세 기록 보기 내에 확인된 철거 날짜가 표시됩니다.",
+                disclaimer_removal: "중요: '철거 날짜'는 해당 부스가 당사의 활성 데이터베이스 기록에서 공식적으로 제거된 시점을 나타냅니다. 이는 실제 하드웨어가 해당 위치에서 물리적으로 제거된 날짜와 다를 수 있습니다.",
                 faq_q3: "철거된 부스 신고",
                 faq_a3: "매핑 시스템을 정확하게 유지할 수 있도록 도와주세요. 아카이브에 나열된 부스가 철거되었음에도 다른 곳에서 활성 상태로 표시되는 것을 발견하시면, PayFoneMap의 '부스 신고' 도구를 사용해 주십시오.",
                 faq_q4: "아카이브는 얼마나 자주 업데이트되나요?",
                 faq_a4: "아카이브는 주로 메인 Fonectrix 웹사이트에서 위치가 삭제될 때 지속적으로 업데이트됩니다. 인프라가 폐쇄, 변경되거나 더 이상 활성 목록 기준을 충족하지 않을 경우, 역사적 기록을 유지하기 위해 해당 위치는 아카이브에 보존됩니다. 아카이브는 활성 위치를 추적하거나 업데이트하지 않으며 모든 항목은 문서화 및 보존 목적으로만 유지됩니다.",
                 faq_q5: "보관된 위치가 기본 사이트로 돌아올 수 있나요?",
-                faq_a5: "드문 경우지만, 현재 등록 기준을 충족하는 것으로 독립적으로 확인되면 위치를 재평가할 수 있습니다. 그때까지는 역사적 기록의 일부로 보관됩니다.",
+                faq_a5: "이전 보관된 위치가 현재 등록 기준을 충족하는 것으로 독립적으로 확인되면 위치를 재평가할 수 있습니다. 그때까지는 역사적 기록의 일부로 보관됩니다.",
                 faq_q6: "\"활성 목록에서 제거됨\"은 무엇을 의미합니까?",
                 faq_a6: "해당 위치가 메인 Fonectrix 웹사이트에 표시되는 데 필요한 기준을 더 이상 충족하지 않음을 의미합니다. 여기에는 인증 손실, 접근성 변경, 인프라 변경 또는 폐쇄가 포함될 수 있습니다.",
                 faq_btn3: "PayFoneMap에 신고하기",
@@ -374,10 +402,12 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "Aide et ressources",
                 help_subtitle: "Questions fréquentes et support pour le registre.",
                 help_click_more: "Cliquez pour en savoir plus",
+                date_format_label: "Format de date",
                 faq_q1: "Qu'est-ce que l'Archive Fonectrix ?",
                 faq_a1: "L'Archive Fonectrix sert de répertoire historique pour les infrastructures de télécommunications qui ont été documentées via nos projets de cartographie et déclassées par la suite.",
                 faq_q2: "Quand la cabine a-t-elle été retirée ?",
-                faq_a2: "La date spécifique de mise hors service est enregistrée pour chaque entrée au format JJ-MM-AAAA. Pour consulter cette information, sélectionnez une cabine spécifique dans l'index ; la date de retrait vérifiée sera affichée dans la vue détaillée de l'enregistrement.\n\nDD-MM-YYYY (ex: 20/04/2020)",
+                faq_a2: "La date spécifique de mise hors service est enregistrée pour chaque entrée. Pour consulter cette information, sélectionnez une cabine spécifique dans l' l'index ; la date de retrait vérifiée sera affichée dans la vue détaillée de l'enregistrement.",
+                disclaimer_removal: "IMPORTANT : La « Date de retrait » indique le moment où la cabine a été officiellement supprimée de nos dossiers de base de données active. Cela peut différer de la date réelle à laquelle le matériel a été physiquement retiré de l'emplacement.",
                 faq_q3: "Signaler une cabine retirée",
                 faq_a3: "Aidez-nous à maintenir l'exactitude de notre système de cartographie. Si vous remarquez une cabine répertoriée dans nos archives qui a été retirée mais apparaît comme active ailleurs, veuillez utiliser l'outil Signaler une cabine sur PayFoneMap.",
                 faq_q4: "À quelle fréquence l'archive est-elle mise à jour ?",
@@ -385,7 +415,7 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 faq_q5: "Les lieux archivés peuvent-ils revenir sur le site principal ?",
                 faq_a5: "Dans de rares cas, un emplacement peut être réévalué s'il est vérifié de manière indépendante comme répondant aux normes d'inscription actuelles. Jusque-là, il reste archivé comme faisant partie du dossier historique.",
                 faq_q6: "Que signifie « retiré de la liste active » ?",
-                faq_a6: "Cela signifie que l'emplacement ne répond plus aux critères requis pour apparaître sur le site Web principal de Fonectrix. Cela peut inclure la perte de vérification, des changements dans l'accessibilité, une modification de l'infrastructure ou une mise hors service.",
+                faq_a6: "Cela signifie que l'emplacement ne répond plus aux critères requis pour apparaître sur le site Web principal de Fonectrix. Cela peut inclure la perte de verification, des changements dans l'accessibilité, une modification de l'infrastructure ou une mise hors service.",
                 faq_btn3: "Signaler à PayFoneMap",
                 drawer_observation: "Observation", drawer_geodata: "Géodonnées", drawer_removal: "Date de retrait",
                 drawer_maps_btn: "Ouvrir dans Maps", drawer_footer: "Powered by PayFoneMap.com",
@@ -402,10 +432,12 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
                 help_title: "Помощь и ресурсы",
                 help_subtitle: "Часто задаваемые вопросы и поддержка реестра.",
                 help_click_more: "Нажмите, чтобы прочитать",
+                date_format_label: "Формат даты",
                 faq_q1: "Что такое Архив Fonectrix?",
                 faq_a1: "Архив Fonectrix служит историческим депозитарием объектов телекоммуникационной инфраструктуры, которые были задокументированы в рамках наших картографических проектов и впоследствии выведены из эксплуатации.",
                 faq_q2: "Когда была демонтирована будка?",
-                faq_a2: "Для каждой записи фиксируется конкретная дата вывода из эксплуатации в формате ДД-ММ-ГГГГ. Чтобы просмотреть эту информацию, выберите определенную будку из индекса; подтвержденная дата демонтажа будет отображена в режиме детального просмотра записи.\n\nDD-MM-YYYY (например, 20/04/2020)",
+                faq_a2: "Для каждой записи фиксируется конкретная дата вывода из эксплуатации. Чтобы просмотреть эту информацию, выберите определенную будку из индекса; подтвержденная дата демонтажа будет отображена в режиме детального просмотра записи.",
+                disclaimer_removal: "ВАЖНО: «Дата удаления» указывает на то, когда будка была официально удалена из наших записей в активной базе данных. Это может отличаться от фактической даты физического демонтажа оборудования с этого местоположения.",
                 faq_q3: "Сообщить о демонтированной будке",
                 faq_a3: "Помогите нам поддерживать точность нашей системы картографии. Если вы заметили будку в нашем архиве, которая была демонтирована, но числится активной в других местах, воспользуйтесь инструментом «Сообщить о будке» на PayFoneMap.",
                 faq_q4: "Как часто обновляется архив?",
@@ -545,7 +577,7 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
             setView('list'); renderFilters(); renderList();
         }
 
-        function openHelpModal(qKey, aKey) {
+        function openHelpModal(qKey, aKey, disclaimerKey = null, showFormat = false) {
             const lang = I18N[currentLang] || I18N.en;
             const title = lang[qKey];
             const body = lang[aKey];
@@ -553,6 +585,26 @@ Canada,New Brunswick,"46.08972, -64.77722","Bell Payphone - 39 Alma St., Moncton
             document.getElementById('help-modal-title').textContent = title;
             document.getElementById('help-modal-body').innerHTML = body.replace(/\n/g, '<br>');
             
+            const disclaimerBox = document.getElementById('help-modal-disclaimer-box');
+            if (disclaimerKey && lang[disclaimerKey]) {
+                disclaimerBox.innerHTML = `
+                    <div class="faq-disclaimer flex items-start gap-3">
+                        <i data-lucide="alert-circle" class="text-red-500 shrink-0 mt-0.5" size="18"></i>
+                        <p class="text-[11px] font-bold uppercase leading-snug text-red-800 tracking-tight">${lang[disclaimerKey]}</p>
+                    </div>
+                `;
+                disclaimerBox.classList.remove('hidden');
+            } else {
+                disclaimerBox.classList.add('hidden');
+            }
+
+            const formatExample = document.getElementById('help-modal-format-example');
+            if (showFormat) {
+                formatExample.classList.remove('hidden');
+            } else {
+                formatExample.classList.add('hidden');
+            }
+
             const actionContainer = document.getElementById('help-modal-action-container');
             if (qKey === 'faq_q3') {
                 actionContainer.innerHTML = `
